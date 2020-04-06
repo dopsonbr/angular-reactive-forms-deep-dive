@@ -110,6 +110,8 @@ export class OrderLineComponent implements OnInit, OnDestroy, ControlValueAccess
     this.onTouched = fn;
   }
 
+  // this type signature isn't enforced
+  // the only type error you can actually catch is if the signature of the setter changes
   writeValue(ol: OrderLine): void {
     this.orderLine = ol;
   }

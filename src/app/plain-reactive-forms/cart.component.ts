@@ -64,6 +64,10 @@ export class CartComponent implements OnInit, OnDestroy {
               [cur.value.id]: cur.errors
             };
           }, {});
+      }),
+      tap(_ => {
+        console.log(this.orderLinesForm.errors);
+        console.log(this.cartForm.errors);
       })
     );
 

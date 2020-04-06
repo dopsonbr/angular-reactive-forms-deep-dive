@@ -33,7 +33,8 @@ The quantity editor ux optimization is not negotiable.
  Generally I want to let the validation happen close to the parent/root so that error handling is easier 
  and custom controls remain agnostic of buisness logic so they are more reusable. So, I want to 
  the `OrderLineComponent` and `QuantityEditorComponent` to look something like [A] but instead must be implemented as [B]. 
- ```
+ 
+```
 @Component({
   template: `
       <form [formGroup]="orderLineForm">
