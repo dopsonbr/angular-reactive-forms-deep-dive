@@ -11,7 +11,7 @@ import {
   NG_VALIDATORS,
   NG_VALUE_ACCESSOR,
   ValidationErrors,
-  Validator
+  Validator, Validators
 } from '@angular/forms';
 import {pluck, takeUntil, tap} from 'rxjs/operators';
 import {Subject} from 'rxjs';
@@ -37,16 +37,16 @@ import {UnitOfMeasure} from '../../models/product';
     <ng-container [ngSwitch]="unitOfMeasure">
       <nz-card>
         <form [formGroup]="quantityEditorForm">
+
           <app-linear-foot-quantity-editor *ngSwitchCase="'LF'" [formControl]="linearFeet">
 
           </app-linear-foot-quantity-editor>
-          <app-default-quantity-editor
-            *ngSwitchDefault
-            [formControl]="defaultQuantity"
-          ></app-default-quantity-editor>
-          <div>quantity-editor status {{quantityEditorForm.status}}</div>
-          <div>quantity-editor rawValue {{quantityEditorForm.getRawValue() | json}}</div>
+              <app-default-quantity-editor
+                *ngSwitchDefault
+                [formControl]="defaultQuantity"
+              ></app-default-quantity-editor>
         </form>
+        <app-form-debug name="quantityEditor" [form]="quantityEditorForm"></app-form-debug>
       </nz-card>
     </ng-container>
   `,
@@ -57,7 +57,7 @@ export class QuantityEditorComponent implements OnInit, OnDestroy, ControlValueA
   @Input() readonly unitOfMeasure: UnitOfMeasure = 'EA';
 
   readonly quantityEditorForm = this.fb.group({
-    EA: [],
+    EA: [0, Validators.min(0)],
     LF: []
   });
 
@@ -67,7 +67,8 @@ export class QuantityEditorComponent implements OnInit, OnDestroy, ControlValueA
   private _propagateChange: any = () => {
   };
 
-  private _onTouched():void {}
+  private _onTouched(): void {
+  }
 
   set quantity(qty: number) {
     this.quantityEditorForm.get(this.unitOfMeasure)?.patchValue(qty);
@@ -113,7 +114,11 @@ export class QuantityEditorComponent implements OnInit, OnDestroy, ControlValueA
   }
 
   validate(_: FormControl): ValidationErrors | null {
-    return this.quantityEditorForm.valid ? null : {'invalid-quantity': true};
+    if(this.quantityEditorForm.valid){
+      return null;
+    }
+    this.quantityEditorForm.setErrors(this.defaultQuantity.errors);
+    return this.defaultQuantity.errors;
   }
 
 }

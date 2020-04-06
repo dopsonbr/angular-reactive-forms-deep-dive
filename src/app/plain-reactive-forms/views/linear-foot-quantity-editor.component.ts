@@ -27,37 +27,40 @@ import {map, takeUntil} from 'rxjs/operators';
     }
   ],
   template: `
-    <form nz-form [formGroup]="linearFootQuantity" [nzLayout]="'inline'">
-      <nz-form-item>
-        <nz-form-label>Feet</nz-form-label>
-        <nz-form-control>
-          <input nz-input
-                 type="number"
-                 [formControl]="feet"
-                 placeholder="ft"
-          />
-        </nz-form-control>
-      </nz-form-item>
-      <nz-form-item>
-        <nz-form-label>Inches</nz-form-label>
-        <nz-form-control>
-          <input nz-input
-                 type="number"
-                 [formControl]="inches"
-                 placeholder="in"
-          />
-        </nz-form-control>
-      </nz-form-item>
-    </form>
+    <nz-card>
+      <form nz-form [formGroup]="linearFootQuantity" [nzLayout]="'inline'">
+        <nz-form-item>
+          <nz-form-label>Feet</nz-form-label>
+          <nz-form-control>
+            <input nz-input
+                   type="number"
+                   [formControl]="feet"
+                   placeholder="ft"
+            />
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <nz-form-label>Inches</nz-form-label>
+          <nz-form-control>
+            <input nz-input
+                   type="number"
+                   [formControl]="inches"
+                   placeholder="in"
+            />
+          </nz-form-control>
+        </nz-form-item>
+      </form>
+      <app-form-debug name="linear-foot-form" [form]="linearFootQuantity"></app-form-debug>
+    </nz-card>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class LinearFootQuantityEditorComponent implements OnInit, OnDestroy, ControlValueAccessor, Validator {
   private _destroySubject$ = new Subject();
   readonly linearFootQuantity = this.fb.group({
-    feet: [0, [Validators.min]],
+    feet: [0, []],
     // component implementation specific validators.
-    inches: [0, [Validators.min(0), Validators.max(11)]]
+    inches: [0, [ Validators.max(11)]]
   });
 
   constructor(private fb: FormBuilder) {
@@ -76,7 +79,7 @@ export class LinearFootQuantityEditorComponent implements OnInit, OnDestroy, Con
     this.inches.patchValue(Math.round((qty % 1) * 12));
   }
 
-  private propagateChange: any = () => {
+  private _propagateChange: any = () => {
   };
 
   ngOnInit(): void {
@@ -85,7 +88,7 @@ export class LinearFootQuantityEditorComponent implements OnInit, OnDestroy, Con
         takeUntil(this._destroySubject$),
         map(next => Number((next.inches / 12 + next.feet).toFixed(3)))
       )
-      .subscribe(next => this.propagateChange(next));
+      .subscribe(next => this._propagateChange(next));
   }
 
   ngOnDestroy(): void {
@@ -94,7 +97,7 @@ export class LinearFootQuantityEditorComponent implements OnInit, OnDestroy, Con
   }
 
   registerOnChange(fn: any): void {
-    this.propagateChange = fn;
+    this._propagateChange = fn;
   }
 
   registerOnTouched(_: any): void {

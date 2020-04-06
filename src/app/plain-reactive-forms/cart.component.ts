@@ -1,32 +1,27 @@
 import {Component, ChangeDetectionStrategy, OnDestroy, OnInit, forwardRef} from '@angular/core';
 import {AbstractControl, FormBuilder, FormGroup, NG_VALIDATORS, ValidationErrors, Validator, Validators} from '@angular/forms';
 import {select, Store} from '@ngrx/store';
-import {getAllOrderLines} from '../reducers/order-lines/order-line.selectors';
+import {getAllOrderLines} from '../data/order-lines/order-line.selectors';
 import {debounceTime, distinctUntilChanged, filter, map, takeUntil, tap} from 'rxjs/operators';
-import {addOrderLine, updateOrderLine} from '../reducers/order-lines/order-line.actions';
-// @ts-ignore
+import {addOrderLine, updateOrderLine} from '../data/order-lines/order-line.actions';
 import {v4 as uuid} from 'uuid';
 import {Subject} from 'rxjs';
-import {OrderLine } from '../models/order-line';
+import {OrderLine} from '../models/order-line';
 
 @Component({
   selector: 'app-cart',
   template: `
     <form [formGroup]="cartForm">
-      <nz-card nzTitle="cart">
+      <nz-card nzTitle="cart-form">
         <nz-layout>
           <nz-content>
-            <nz-card nzTitle="order lines container" formArrayName="orderLines">
+            <nz-card nzTitle="order-lines-form" [formGroup]="orderLinesForm">
               <app-order-line
                 *ngFor="let ol of orderLinesForm.controls | keyvalue"
                 [formControlName]="ol.key"
               >
               </app-order-line>
-              <p>order-lines status {{orderLinesForm.status}}</p>
-              <p>order-lines errors {{orderLinesForm.errors}}</p>
-              <p>
-                order-lines rawValue {{orderLinesForm.getRawValue() | json}}
-              </p>
+              <app-form-debug [form]="orderLinesForm"></app-form-debug>
             </nz-card>
           </nz-content>
           <nz-sider>
@@ -47,14 +42,14 @@ import {OrderLine } from '../models/order-line';
 })
 export class CartComponent implements OnInit, OnDestroy {
 
-  private destroySubject$ = new Subject();
+  private readonly destroySubject$ = new Subject();
 
-  cartForm = this.fb.group({
+  readonly cartForm = this.fb.group({
     orderLines: this.fb.group({}, Validators.required)
   });
 
 
-  errors$ = this.cartForm.statusChanges
+  readonly errors$ = this.cartForm.statusChanges
     .pipe(
       map(status => {
         if (status === 'VALID') {
@@ -105,7 +100,7 @@ export class CartComponent implements OnInit, OnDestroy {
     this.destroySubject$.complete();
   }
 
-  addNewOrderLine() {
+  addNewOrderLine(): void {
     const orderLine: OrderLine = {
       id: uuid(),
       quantity: 1,
@@ -114,7 +109,8 @@ export class CartComponent implements OnInit, OnDestroy {
         id: uuid(),
         description: 'my-new-order-line',
         unitOfMeasure: 'EA',
-        listPrice: 2
+        listPrice: 2,
+        quantityLimit: 100
       }
     };
     this.store.dispatch(addOrderLine({orderLine}));

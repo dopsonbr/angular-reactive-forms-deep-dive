@@ -27,19 +27,20 @@ import {UnitOfMeasure} from '../../models/product';
     }
   ],
   template: `
-    <nz-card nzTitle="{{orderLine?.product.description}}">
-      <div class="ant-row-flex ant-row-flex-space-between">
-        <form [formGroup]="orderLineForm">
+    <nz-card nzTitle="order-line-form">
+      <form [formGroup]="orderLineForm">
+        <div class="ant-row-flex ant-row-flex-space-between">
+          <nz-descriptions>
+            <nz-descriptions-item nzTitle="Description">{{orderLine?.product.description}}</nz-descriptions-item>
+            <nz-descriptions-item nzTitle="Price">{{orderLine?.product.listPrice | currency}}</nz-descriptions-item>
+          </nz-descriptions>
           <app-quantity-editor [formControl]="quantity"
-                               [unitOfMeasure]="unitOfMeasure">
+                               [unitOfMeasure]="unitOfMeasure"
+                                >
           </app-quantity-editor>
-        </form>
-        <div>
-          <p>order-line status {{orderLineForm.status}}</p>
-          <p>order-line-form rawValue {{orderLineForm.getRawValue() | json}}</p>
-          <p>order-line-form error {{orderLineForm.errors | json}}</p>
         </div>
-      </div>
+      </form>
+      <app-form-debug name='order-line-form' [form]="orderLineForm"></app-form-debug>
     </nz-card>
   `,
   styles: [],
@@ -50,8 +51,9 @@ export class OrderLineComponent implements OnInit, OnDestroy, ControlValueAccess
   private _orderLine: OrderLine | undefined;
   private readonly destroySubject = new Subject();
 
+  // todo add validator for quantity > productQuantity limit
   readonly orderLineForm = this.fb.group({
-    quantity: [1, [Validators.required, Validators.min(0), Validators.max(9999)]]
+    quantity: [1]
   });
 
   constructor(private  fb: FormBuilder) {
@@ -69,7 +71,6 @@ export class OrderLineComponent implements OnInit, OnDestroy, ControlValueAccess
           this.propagateChange({...this._orderLine, ...next});
         })
       ).subscribe();
-
   }
 
   ngOnDestroy(): void {

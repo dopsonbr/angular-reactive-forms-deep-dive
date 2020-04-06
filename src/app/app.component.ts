@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {Store} from '@ngrx/store';
-import {addOrderLines} from './reducers/order-lines/order-line.actions';
+import {addOrderLines} from './data/order-lines/order-line.actions';
 import {OrderLine} from './models/order-line';
 
 const ORDER_LINES_DATA: OrderLine[] = [
@@ -12,7 +12,8 @@ const ORDER_LINES_DATA: OrderLine[] = [
       id: 'p1',
       description: 'hammer',
       unitOfMeasure: 'EA',
-      listPrice: 5
+      listPrice: 5,
+      quantityLimit: 10
     }
   },
   {
@@ -23,14 +24,24 @@ const ORDER_LINES_DATA: OrderLine[] = [
       id: 'p2',
       description: 'rope',
       unitOfMeasure: 'LF',
-      listPrice: 1
+      listPrice: 1,
+      quantityLimit: 10
     }
   }
 ];
 
 @Component({
   selector: 'app-root',
-  template: '<app-cart></app-cart>',
+  template: `
+    <nz-tabset>
+      <nz-tab nzTitle="Plain Reactive Forms">
+        <app-cart></app-cart>
+      </nz-tab>
+      <nz-tab nzTitle="ngx-sub-form">WIP</nz-tab>
+      <nz-tab nzTitle="@ngneat/form-manager">WIP</nz-tab>
+      <nz-tab nzTitle="ngrx-forms">WIP</nz-tab>
+    </nz-tabset>
+  `,
 })
 export class AppComponent implements OnInit {
 
