@@ -74,7 +74,7 @@ import {interval, Subject} from 'rxjs';
           +
         </button>
       </div>
-      <app-form-debug name="default-quantity-form" [form]="getDefaultQuantity()"></app-form-debug>
+      <app-form-debug name="default-quantity-form" [form]="defaultQuantity"></app-form-debug>
     </nz-card>
   `,
   styles: [],
@@ -85,7 +85,8 @@ export class DefaultQuantityEditorComponent implements OnInit, OnDestroy, Contro
 
   private propagateChange: any = () => {
   };
-
+  private _onTouched(): void {
+  }
   readonly defaultQuantity = this.fb.group({
     quantity: [0, Validators.min(0)]
   });
@@ -93,9 +94,6 @@ export class DefaultQuantityEditorComponent implements OnInit, OnDestroy, Contro
   constructor(private fb: FormBuilder) {
   }
 
-  getDefaultQuantity(): FormGroup {
-    return this.defaultQuantity;
-  }
 
   get quantity(): FormControl {
     return this.defaultQuantity.get('quantity') as FormControl;
@@ -130,7 +128,8 @@ export class DefaultQuantityEditorComponent implements OnInit, OnDestroy, Contro
     this.propagateChange = fn;
   }
 
-  registerOnTouched(_: any): void {
+  registerOnTouched(fn: any): void {
+    this._onTouched = fn;
   }
 
   writeValue(qty: number): void {
@@ -141,7 +140,8 @@ export class DefaultQuantityEditorComponent implements OnInit, OnDestroy, Contro
     if (value.valid) {
       return null;
     }
-    // this.defaultQuantity.setErrors(this.quantity.errors);
+    // I'm pretty sure this does nothing. I have no idea why I can not get the errors to show up in the form-debug component but are present everywhere else
+    this.defaultQuantity.setErrors(this.quantity.errors);
     return this.quantity.errors;
   }
 }
