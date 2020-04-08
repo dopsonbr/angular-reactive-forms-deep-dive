@@ -74,7 +74,7 @@ export class OrderLineComponent implements OnInit, OnDestroy, ControlValueAccess
   }
 
   ngOnDestroy(): void {
-    console.log('order-line:ngOnDestroy');
+    console.log('order-line:ngOnDestroy', this._orderLine?.id);
     this.destroySubject.next({});
     this.destroySubject.complete();
   }
